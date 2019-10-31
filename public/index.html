@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- styling for map, canvas, custom sliders -->
+  <style>
+         #map { 
+           height: 80%;
+           width:100%;
+           text-align: center;
+           margin: 0 auto 0 auto; 
+
+         }
+       canvas {
+       padding-left: 0;
+       padding-right: 0;
+       margin-left: auto;
+       margin-right: auto;
+       display: block;
+       width: 800px;
+    }
+
+  .slider1::-webkit-slider-thumb {
+     -webkit-appearance: none;
+     appearance: none;
+     width: 23px;
+     height: 24px;
+     border: 0;
+     background: url('wine.png');
+     cursor: pointer;
+    }
+
+    .slider1::-moz-range-thumb {
+     width: 23px;
+     height: 25px;
+     border: 0;
+     background: url('wine.png');
+     cursor: pointer;
+    }
+    .slider2::-webkit-slider-thumb {
+     -webkit-appearance: none;
+     appearance: none;
+     width: 23px;
+     height: 24px;
+     border: 0;
+     background: url('coffee.png');
+     cursor: pointer;
+    }
+
+    .slider2::-moz-range-thumb {
+     width: 23px;
+     height: 25px;
+     border: 0;
+     background: url('coffee.png');
+     cursor: pointer;
+    }
+         /* Optional: Makes the sample page fill the window. */
+         html, body {
+           height: 100%;
+           margin: 0;
+           padding: 0;
+           text-align: center;
+         }
+  </style>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="ie=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+  <meta content="ie=edge" http-equiv="x-ua-compatible"> 
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/main.css" rel="stylesheet">
+  <title>Should I Drink?</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js">
+  </script>
+</head>
+<!-- Loading Chart in -->
+<body onload="chartIt()"> 
+<!-- Title -->
+  <h1>Should I Drink?</h1> 
+<!-- Setting bootstrap containers -->
+  <div class="container">
+    <div class="row">
+      <div class="col">
+<!-- Header for left side -->
+        <h4>Drunk Today</h4>
+       <pp> <strong>(Slide and click submit)</strong></pp>
+        <div class="slidecontainer">
+<!-- Frist  slider -->
+        <p><label for="wine" style="color:#FF4646">I've had <strong><output id="sliderVal"></output></strong><output id="sliderVal"></output> glasses of wine today</label><input class="slider1" id="wine" max="15" min="0" oninput="sliderChange(this.value)" type="range" value="0"></p>
+        </div> 
+<!-- Second  slider -->
+        <p><label for="coffe" style="color:#935D49">I've had <strong><output id="sliderVal1"></output></strong><output id="sliderVal1"></output> cups of coffee today</label><input class="slider2" id="coffe" max="15" min="0" oninput="sliderChange1(this.value)" type="range" value="0"> <output id="sliderVal1"></output><br> 
+        <br>
+<!-- submit button -->
+        <button id="submit">Submit Now</button></p>
+        <p></p>
+      </div>
+<!--  Second column  -->
+      <div class="col">
+<!-- title -->
+        <h4>Nearest Drink</h4>
+<!-- Google Places API -->
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAXiXqTf5BWnSa20XfmQlaur7zvW0DMWD8&callback=getLocation" type="text/javascript"> //Setting my API code
+        </script>
+<!-- Google Map script -->
+        <script> 
+               function getLocation() { //Requsiting API of geographical position of a user
+                 if (navigator.geolocation) { //If browser allows
+                  navigator.geolocation.getCurrentPosition(showPosition);//Getting loction
+                  } else { //If browser does not
+                  x.innerHTML = "Geolocation is not supported by this browser.";
+                  }}
+                function showPosition(position){ //Recording location
+                  initMap(position.coords.latitude, position.coords.longitude);
+                  }
+
+                  function initMap(lat, long) { //Creating google amp
+                    map = new google.maps.Map(document.getElementById('map'), 
+                    {center: {lat: lat, lng: long}, //using the current geographical position of a user
+                    zoom: 15.5,
+                    styles: [ //Styling the map removing some items that were making the map over crowded
+               
+                {
+                  featureType: 'poi', //Removing places of interest
+                  stylers: [{ visibility: "off" }]
+                },
+                {
+                  featureType: 'poi.park',//Removing places of interest parks
+                  stylers: [{ visibility: "off" }]
+                },                 
+              ]});
+                   var icons = { //Loading in the Icon images for each venue type
+                      omg: { //type
+                        icon: '/omg.png'//Finding the image and setting to a logo type
+                      },
+                      broncos: {//type
+                        icon: '/broncos.png'//Finding the image and setting to a logo type
+                      },
+                      kings: {//type
+                        icon:  '/kings.png'//Finding the image and setting to a logo type
+                      },
+                      jacks: {//type
+                        icon:  '/jacks.png'//Finding the image and setting to a logo type
+                      },
+                       press: {//type
+                        icon:  '/press.png'//Finding the image and setting to a logo type
+                      },
+                      sugar: {//type
+                        icon:  '/sugar.png'//Finding the image and setting to a logo type
+                      },
+                      btp: {//type
+                        icon:  '/btp.png'//Finding the image and setting to a logo type
+                      },
+                   };
+
+            var features = [
+                      {
+                        position: new google.maps.LatLng(51.453174, -2.601697),//Venue position marker
+                        type: 'omg'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(51.453552, -2.600872),//Venue position marker
+                        type: 'omg'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(51.456720, -2.579145), //Venue position marker
+                        type: 'jacks'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(50.367607, -4.134912), //Venue position marker
+                        type: 'press'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(50.368278, -4.135889), //Venue position marker
+                        type: 'omg'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(50.368086, -4.136477), //Venue position marker
+                        type: 'jacks'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  53.406810, -2.988207), //Venue position marker
+                        type: 'omg'//marker type to place
+                      }, 
+                        {
+                        position: new google.maps.LatLng(  53.407296, -2.988209), //Venue position marker
+                        type: 'sugar'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.623099, -3.942286), //Venue position marker
+                        type: 'kings'//marker type to place
+                      },
+                      {
+                        position: new google.maps.LatLng(  53.381482, -1.473524), //Venue position marker
+                        type: 'broncos'//marker type to place
+                      }, 
+                       {
+                        position: new google.maps.LatLng(  51.080721, -4.061460), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.385897, -2.361993), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  52.483064, -1.893526), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.381424, -2.362914), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.465719, -2.590190), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.497472, -2.560045), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.454827, -2.619133), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.480358, -2.588814), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                       {
+                        position: new google.maps.LatLng(  51.455364, -2.604044), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.463737, -2.609208), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.901005, -2.077464), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.901005, -2.077464), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  52.470703, -1.923278), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  50.724609, -3.531794), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  52.459601, -1.946456), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  50.800624, -3.186272), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  50.369083, -4.134980), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  50.847581, -1.793508), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  52.413580, -1.781767), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.067931, -1.797388), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  51.014623, -3.103328), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  52.194058, -1.708679), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                      {
+                        position: new google.maps.LatLng(  52.192839, -2.223080), //Venue position marker
+                        type: 'btp'//marker type to place
+                      }, 
+                    ];
+                     for (var i = 0; i < features.length; i++) { // markers
+                      var marker = new google.maps.Marker({ // create markers
+                        position: features[i].position,  // loction
+                        icon: icons[features[i].type].icon, //icon type
+                        map: map //place on 'map'
+                      });
+                    };
+                  }
+        </script> 
+       
+        <div id="map"></div>
+      </div>
+    </div>
+<!-- New Row -->
+    <p></p>
+<!-- title -->
+    <h4>Your History</h4> 
+<!-- Setting up chart canvas -->
+    <canvas height="400" id="canvas" width="750"></canvas>
+    <p></p>
+<!-- Chart Script -->
+    <script>
+            function sliderChange(val) {
+                document.getElementById('sliderVal').innerHTML = val; // receiving data from slider
+            }
+            function sliderChange1(val) {
+                document.getElementById('sliderVal1').innerHTML = val; // receiving data from slider
+            }
+
+            const buttonSubmit = document.getElementById('submit'); //Logging data to datadase
+            buttonSubmit.addEventListener('click', async event => {
+
+              const wine = document.getElementById('wine').value;
+              const coffe = document.getElementById('coffe').value;
+
+              const data = {wine,coffe};
+              const options = {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+              };
+              const response = await fetch('/api', options);
+              const json = await response.json();
+              
+              chartIt(); // Task 01
+            });
+
+            // Task 01
+            async function chartIt() {
+
+              const response = await fetch('/api');
+              const dataStuff = await response.json();
+              console.log(dataStuff);
+
+              var habits = {
+                wine: [],
+                coffe: []
+              };
+
+              let xVals = [];
+              let yVals = [];
+
+
+              for (let i = 0; i < dataStuff.length; i++){
+
+                xVals[i] = new Date(dataStuff[i].timestamp).toLocaleString();
+                habits.wine[i] = dataStuff[i].wine;
+                habits.coffe[i] = dataStuff[i].coffe;
+              }
+
+              var lineChartData = {
+                labels: xVals,
+                datasets: [{
+                  label: 'Glasses of Wine',
+                  borderColor: '#FFB4B4',
+                  backgroundColor: '#FF4F4F',
+                  fill: false,
+                  data: habits.wine,
+                  yAxisID: 'y-axis-1',
+                }, {
+                  label: 'Cups of Coffee',
+                  borderColor: "#CB917B",
+                  backgroundColor: "#935D49",
+                  fill: false,
+                  data: habits.coffe,
+                }]
+              };
+
+            var ctx = document.getElementById('canvas').getContext('2d'); 
+            var line = Chart.Line(ctx, {
+              data: lineChartData,
+              options: {
+                responsive: true,
+                hoverMode: 'index',
+                scales: {
+                  yAxes: [{
+                    type: 'linear', 
+                    display: 'true',
+                    position: 'left',
+                    id: 'y-axis-1',
+                  }],
+                }
+              }
+            });
+          
+        }
+
+
+
+    </script>
+  </div>
+</body>
+</html>
